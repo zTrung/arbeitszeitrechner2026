@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbeitszeitenrechner</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'IBM Plex Mono', monospace;
+    background: #1a1a2e;
+    min-height: 100vh;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #e0e0e0;
+  }
+  
+  .container {
+    background: #252543;
+    border-radius: 8px;
+    padding: 40px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 1px solid #3a3a5c;
+  }
+  
+  h1 {
+    font-size: 1.5em;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #00d4ff;
+    letter-spacing: 0.5px;
+  }
+  
+  .header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+  }
+  
+  .live-time {
+    font-size: 0.9em;
+    color: #8a8aa0;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+  }
+  
+  .live-time span {
+    color: #00d4ff;
+    font-weight: 500;
+  }
+  
+  .subtitle {
+    color: #8a8aa0;
+    font-size: 0.85em;
+    margin-bottom: 35px;
+    font-weight: 400;
+  }
+  
+  .input-group {
+    margin-bottom: 24px;
+    position: relative;
+  }
+  
+  .input-with-button {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+  }
+  
+  .input-with-button input {
+    flex: 1;
+  }
+  
+  .btn-now {
+    padding: 12px 16px;
+    background: transparent;
+    color: #00d4ff;
+    border: 1px solid #00d4ff;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 0.85em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  
+  .btn-now:hover {
+    background: rgba(0, 212, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  .btn-now:active {
+    transform: translateY(0);
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: #b0b0c0;
+    font-size: 0.85em;
+    font-weight: 500;
+  }
+  
+  input[type="time"],
+  input[type="number"] {
+    width: 100%;
+    padding: 12px 14px;
+    background: #1a1a2e;
+    border: 1px solid #3a3a5c;
+    border-radius: 6px;
+    color: #e0e0e0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1em;
+    transition: all 0.2s ease;
+  }
+  
+  input[type="time"]:focus,
+  input[type="number"]:focus {
+    outline: none;
+    border-color: #00d4ff;
+    background: #1f1f35;
+  }
+  
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+    cursor: pointer;
+  }
+  
+  .button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  
+  button {
+    flex: 1;
+    padding: 14px;
+    border: none;
+    border-radius: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 500;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .btn-calculate {
+    background: #00d4ff;
+    color: #1a1a2e;
+  }
+  
+  .btn-calculate:hover {
+    background: #00bfe6;
+    transform: translateY(-1px);
+  }
+  
+  .btn-calculate:active {
+    transform: translateY(0);
+  }
+  
+  .btn-reset {
+    background: transparent;
+    color: #8a8aa0;
+    border: 1px solid #3a3a5c;
+  }
+  
+  .btn-reset:hover {
+    background: #2a2a45;
+    color: #b0b0c0;
+  }
+  
+  .result-container {
+    margin-top: 32px;
+    padding: 24px;
+    background: #1a1a2e;
+    border-radius: 6px;
+    border: 1px solid #3a3a5c;
+    min-height: 80px;
+  }
+  
+  .result-title {
+    color: #8a8aa0;
+    font-size: 0.8em;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+  
+  #ergebnis {
+    color: #e0e0e0;
+    font-size: 1em;
+    line-height: 1.6;
+  }
+  
+  #ergebnis b {
+    color: #00d4ff;
+    font-weight: 600;
+  }
+  
+  .pause-info {
+    margin-top: 16px;
+    padding: 16px;
+    background: rgba(0, 212, 255, 0.05);
+    border-left: 3px solid #00d4ff;
+    border-radius: 4px;
+    font-size: 0.95em;
+    line-height: 1.6;
+  }
+  
+  .warning {
+    color: #ffaa00;
+  }
+  
+  .good {
+    color: #00ff88;
+  }
+  
+  /* Mobile Responsiveness */
+  @media (max-width: 600px) {
+    .container {
+      padding: 30px 24px;
+    }
+    
+    .button-group {
+      flex-direction: column;
+    }
+    
+    .btn-now {
+      padding: 10px 14px;
+      font-size: 0.8em;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-container">
+    <h1>Arbeitszeitenrechner</h1>
+    <div class="live-time"><span id="liveTime">--:--</span></div>
+  </div>
+  <div class="subtitle">Berechne deine Arbeitszeit und gesetzliche Pausen</div>
+  
+  <div class="input-group">
+    <label for="start">Startzeit</label>
+    <div class="input-with-button">
+      <input type="time" id="start" required>
+      <button class="btn-now" onclick="setzeJetzt()">Jetzt</button>
+    </div>
+  </div>
+  
+  <div class="input-group">
+    <label for="pause">Bereits gemachte Pause (Minuten)</label>
+    <input type="number" id="pause" value="30" min="0" step="5">
+  </div>
+  
+  <div class="input-group">
+    <label for="soll">Soll-Arbeitszeit (Stunden)</label>
+    <input type="number" id="soll" value="7.6" step="0.1" min="0" max="24">
+  </div>
+  
+  <div class="input-group">
+    <label for="tatsächlich">Tatsächliche Endzeit (Optional)</label>
+    <div class="input-with-button">
+      <input type="time" id="tatsächlich">
+      <button class="btn-now" onclick="setzeEndeJetzt()">Jetzt</button>
+    </div>
+  </div>
+  
+  <div class="button-group">
+    <button class="btn-calculate" onclick="berechne()">Berechnen</button>
+    <button class="btn-reset" onclick="zurücksetzen()">Zurücksetzen</button>
+  </div>
+  
+  <div class="result-container">
+    <div class="result-title">Ergebnis</div>
+    <div id="ergebnis">Bereit für Berechnung</div>
+  </div>
+  
+</div>
+
+<script>
+// Live-Uhrzeit aktualisieren
+function aktualisiereLiveTime() {
+    const jetzt = new Date();
+    const stunden = String(jetzt.getHours()).padStart(2, '0');
+    const minuten = String(jetzt.getMinutes()).padStart(2, '0');
+    const sekunden = String(jetzt.getSeconds()).padStart(2, '0');
+    document.getElementById("liveTime").textContent = `${stunden}:${minuten}:${sekunden}`;
+}
+
+// Starte die Uhr
+aktualisiereLiveTime();
+setInterval(aktualisiereLiveTime, 1000);
+
+function setzeJetzt() {
+    const jetzt = new Date();
+    const stunden = String(jetzt.getHours()).padStart(2, '0');
+    const minuten = String(jetzt.getMinutes()).padStart(2, '0');
+    document.getElementById("start").value = `${stunden}:${minuten}`;
+}
+
+function setzeEndeJetzt() {
+    const jetzt = new Date();
+    const stunden = String(jetzt.getHours()).padStart(2, '0');
+    const minuten = String(jetzt.getMinutes()).padStart(2, '0');
+    document.getElementById("tatsächlich").value = `${stunden}:${minuten}`;
+}
+
+function berechne() {
+    const start = document.getElementById("start").value;
+    const pauseGemacht = parseInt(document.getElementById("pause").value) || 0;
+    const soll = parseFloat(document.getElementById("soll").value) || 0;
+    const tatsächlich = document.getElementById("tatsächlich").value;
+
+    if (!start) {
+        document.getElementById("ergebnis").innerHTML = "Bitte Startzeit eingeben";
+        return;
+    }
+
+    const [startH, startM] = start.split(":").map(Number);
+    let startDate = new Date();
+    startDate.setHours(startH, startM, 0, 0);
+
+    // Berechne Endzeit (Soll-Arbeitszeit + Pause)
+    const endDate = new Date(startDate.getTime() + ((soll * 60 + pauseGemacht) * 60 * 1000));
+    let endZeit = endDate.toTimeString().slice(0,5);
+
+    let ergebnisText = `Geplante Endzeit: <b>${endZeit}</b><br><br>`;
+
+    // Gesetzliche Pausenberechnung basierend auf aktueller Zeit
+    let aktuelleZeit = tatsächlich || new Date().toTimeString().slice(0,5);
+    const [aktH, aktM] = aktuelleZeit.split(":").map(Number);
+    let aktDate = new Date();
+    aktDate.setHours(aktH, aktM, 0, 0);
+    
+    // Bereits gearbeitete Zeit in Minuten (Bruttoarbeitszeit seit Start)
+    let bruttoArbeitszeit = (aktDate - startDate) / 60000;
+    
+    // Nettoarbeitszeit (abzüglich bereits gemachter Pausen)
+    let nettoArbeitszeit = bruttoArbeitszeit - pauseGemacht;
+    
+    if (bruttoArbeitszeit > 0) {
+        // Prüfe welche Pausenregelung greift
+        if (nettoArbeitszeit < 360) {
+            // Noch unter 6 Stunden gearbeitet
+            let verbleibendeMinuten = 360 - nettoArbeitszeit;
+            let verbleibendH = Math.floor(verbleibendeMinuten / 60);
+            let verbleibendM = Math.round(verbleibendeMinuten % 60);
+            
+            // Berechne Uhrzeit wann 30min Pause erforderlich wird
+            let pausenZeit = new Date(aktDate.getTime() + verbleibendeMinuten * 60000);
+            let pausenZeitStr = pausenZeit.toTimeString().slice(0,5);
+            
+            if (pauseGemacht >= 30) {
+                // Zeige wann 45min Pause nötig wird (bei 9h)
+                let bis45min = 540 - nettoArbeitszeit;
+                let h45 = Math.floor(bis45min / 60);
+                let m45 = Math.round(bis45min % 60);
+                let pausenZeit45 = new Date(aktDate.getTime() + bis45min * 60000);
+                ergebnisText += `Noch <b>${h45}h ${m45}min</b> bis 45min Pause (${pausenZeit45.toTimeString().slice(0,5)})<br><br>`;
+            } else {
+                ergebnisText += `Noch <b>${verbleibendH}h ${verbleibendM}min</b> bis 30min Pause (${pausenZeitStr})<br><br>`;
+            }
+        } else if (nettoArbeitszeit < 540) {
+            // Zwischen 6 und 9 Stunden gearbeitet - 30min Pause erforderlich
+            if (pauseGemacht < 30) {
+                ergebnisText += `<span class="warning">⚠ 30min Pause nötig!</span><br><br>`;
+            }
+            
+            // Berechne Zeit bis 45min Pause erforderlich wird
+            let bisNaechstePause = 540 - nettoArbeitszeit;
+            let h = Math.floor(bisNaechstePause / 60);
+            let m = Math.round(bisNaechstePause % 60);
+            let naechstePausenZeit = new Date(aktDate.getTime() + bisNaechstePause * 60000);
+            ergebnisText += `Noch <b>${h}h ${m}min</b> bis 45min Pause (${naechstePausenZeit.toTimeString().slice(0,5)})<br><br>`;
+        } else {
+            // Über 9 Stunden gearbeitet - 45min Pause erforderlich
+            if (pauseGemacht < 45) {
+                ergebnisText += `<span class="warning">⚠ 45min Pause nötig!</span><br><br>`;
+            }
+        }
+    }
+
+    // Überstundenberechnung (wenn tatsächliche Endzeit angegeben)
+    if (tatsächlich) {
+        const [tH, tM] = tatsächlich.split(":").map(Number);
+        let tDate = new Date();
+        tDate.setHours(tH, tM, 0, 0);
+
+        let diffMin = (tDate - endDate) / 60000;
+        if (diffMin > 0) {
+            let h = Math.floor(diffMin / 60);
+            let m = Math.round(diffMin % 60);
+            ergebnisText += `Überstunden: <b class="warning">+${h}h ${m}min</b>`;
+        } else if (diffMin < 0) {
+            let h = Math.floor(-diffMin / 60);
+            let m = Math.round(-diffMin % 60);
+            ergebnisText += `Zu früh: <b>-${h}h ${m}min</b>`;
+        } else {
+            ergebnisText += `<span class="good">Pünktlich Feierabend ✓</span>`;
+        }
+    }
+
+    document.getElementById("ergebnis").innerHTML = ergebnisText;
+}
+
+function zurücksetzen() {
+    document.getElementById("start").value = "";
+    document.getElementById("pause").value = "30";
+    document.getElementById("soll").value = "7.6";
+    document.getElementById("tatsächlich").value = "";
+    document.getElementById("ergebnis").innerHTML = "Bereit für Berechnung";
+}
+
+// Enter-Taste zum Berechnen
+document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        berechne();
+    }
+});
+
+// Auto-Update wenn "Jetzt" als Endzeit verwendet wird
+setInterval(function() {
+    const tatsächlich = document.getElementById("tatsächlich").value;
+    const start = document.getElementById("start").value;
+    
+    // Nur auto-updaten wenn Startzeit gesetzt ist und ein früheres Ergebnis berechnet wurde
+    if (start && document.getElementById("ergebnis").innerHTML !== "Bereit für Berechnung") {
+        berechne();
+    }
+}, 30000); // Alle 30 Sekunden aktualisieren
+</script>
+
+</body>
+</html>
