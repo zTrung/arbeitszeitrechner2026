@@ -42,25 +42,6 @@
     letter-spacing: 0.5px;
   }
   
-  .header-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 8px;
-  }
-  
-  .live-time {
-    font-size: 0.9em;
-    color: #8a8aa0;
-    font-weight: 400;
-    letter-spacing: 0.5px;
-  }
-  
-  .live-time span {
-    color: #00d4ff;
-    font-weight: 500;
-  }
-  
   .subtitle {
     color: #8a8aa0;
     font-size: 0.85em;
@@ -249,10 +230,7 @@
 <body>
 
 <div class="container">
-  <div class="header-container">
-    <h1>Arbeitszeitenrechner</h1>
-    <div class="live-time"><span id="liveTime">--:--</span></div>
-  </div>
+  <h1>Arbeitszeitenrechner</h1>
   <div class="subtitle">Berechne deine Arbeitszeit und gesetzliche Pausen</div>
   
   <div class="input-group">
@@ -294,19 +272,6 @@
 </div>
 
 <script>
-// Live-Uhrzeit aktualisieren
-function aktualisiereLiveTime() {
-    const jetzt = new Date();
-    const stunden = String(jetzt.getHours()).padStart(2, '0');
-    const minuten = String(jetzt.getMinutes()).padStart(2, '0');
-    const sekunden = String(jetzt.getSeconds()).padStart(2, '0');
-    document.getElementById("liveTime").textContent = `${stunden}:${minuten}:${sekunden}`;
-}
-
-// Starte die Uhr
-aktualisiereLiveTime();
-setInterval(aktualisiereLiveTime, 1000);
-
 function setzeJetzt() {
     const jetzt = new Date();
     const stunden = String(jetzt.getHours()).padStart(2, '0');
